@@ -8,45 +8,27 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        shopee: { orange: '#EE4D2D', dark: '#D73211', light: '#FF6B4A' }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .glass-effect { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .dark .glass-effect { background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
         .card-hover { transition: all 0.3s ease; }
         .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .logo-shopee { filter: drop-shadow(0 4px 6px rgba(238, 77, 45, 0.3)); }
-        .btn-shopee { background: linear-gradient(135deg, #EE4D2D, #D73211); }
-        .btn-shopee:hover { background: linear-gradient(135deg, #FF6B4A, #EE4D2D); }
+        .chart-container { position: relative; height: 250px; width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
     
     <!-- Botão Dark Mode -->
-    <button onclick="toggleDarkMode()" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform duration-200 group">
-        <i class="fas fa-moon text-gray-600 dark:text-yellow-400 text-xl group-hover:rotate-12 transition-transform"></i>
+    <button onclick="toggleDarkMode()" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform duration-200">
+        <i class="fas fa-moon text-gray-600 dark:text-yellow-400 text-xl"></i>
     </button>
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-72 bg-white dark:bg-gray-800 shadow-xl z-40 transition-all duration-300 flex flex-col">
             <div class="p-6 border-b border-gray-200 dark:border-gray-700 text-center">
-                <!-- Logo Shopee -->
                 <div class="flex justify-center mb-4">
-                    <div class="w-20 h-20 bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-2xl flex items-center justify-center shadow-lg logo-shopee">
+                    <div class="w-20 h-20 bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-2xl flex items-center justify-center shadow-lg">
                         <i class="fas fa-shopping-bag text-white text-4xl"></i>
                     </div>
                 </div>
@@ -66,7 +48,7 @@
             <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                     <i class="fas fa-database mr-2 text-[#EE4D2D]"></i>
-                    <span id="last-update">Dados Locais</span>
+                    <span>Dados Locais</span>
                 </div>
             </div>
         </aside>
@@ -93,24 +75,29 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Inicial</label>
-                            <input type="date" id="dash-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] focus:border-transparent" onchange="applyDashboardFilters()">
+                            <input type="date" id="dash-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Final</label>
-                            <input type="date" id="dash-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] focus:border-transparent" onchange="applyDashboardFilters()">
+                            <input type="date" id="dash-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Turno</label>
-                            <select id="dash-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyDashboardFilters()">
+                            <select id="dash-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos (T1, T2, T3)</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sortcode</label>
-                            <select id="dash-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyDashboardFilters()">
+                            <select id="dash-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="applyDashboardFilters()" class="px-6 py-2 bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
+                            <i class="fas fa-filter mr-2"></i>Aplicar Filtros
+                        </button>
                     </div>
                 </div>
 
@@ -174,11 +161,15 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Distribuição por Status</h3>
-                        <canvas id="statusChart" height="300"></canvas>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Veículos por Turno</h3>
-                        <canvas id="turnoChart" height="300"></canvas>
+                        <div class="chart-container">
+                            <canvas id="turnoChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -191,11 +182,9 @@
                         <p class="text-gray-600 dark:text-gray-400">Gestão detalhada das viagens</p>
                     </div>
                     
-                    <!-- Busca -->
                     <div class="relative w-full md:w-96">
                         <input type="text" id="search-trip" placeholder="Buscar por Trip Number..." 
-                            class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] shadow-lg"
-                            onkeyup="applyOperacaoFilters()">
+                            class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] shadow-lg">
                         <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
                 </div>
@@ -213,30 +202,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Inicial</label>
-                            <input type="date" id="op-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyOperacaoFilters()">
+                            <input type="date" id="op-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Final</label>
-                            <input type="date" id="op-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyOperacaoFilters()">
+                            <input type="date" id="op-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Turno</label>
-                            <select id="op-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyOperacaoFilters()">
+                            <select id="op-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sortcode</label>
-                            <select id="op-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyOperacaoFilters()">
+                            <select id="op-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Origem</label>
-                            <select id="op-source" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]" onchange="applyOperacaoFilters()">
+                            <select id="op-source" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todas</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="applyOperacaoFilters()" class="px-6 py-2 bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
+                            <i class="fas fa-filter mr-2"></i>Aplicar Filtros
+                        </button>
                     </div>
                 </div>
 
@@ -274,7 +268,7 @@
     </div>
 
     <script>
-        // DADOS REAIS BASEADOS NA PLANILHA
+        // DADOS REAIS
         const dados = [
             {trip_number: "LT0Q2C01YMQW1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Truck", sortcode: "HUB-LPE-11", cpt_realized: "2024-01-15 08:30", orders: 6200, trip_source: "FORECAST", justificativa: ""},
             {trip_number: "LT0Q2C01YKCV1", turno: "T2", trip_status: "Em Andamento", vehicle_type_name: "Van", sortcode: "HUB-LPE-02", cpt_realized: "2024-01-15 14:20", orders: 4500, trip_source: "SPOT", justificativa: "Falta de pacotes"},
@@ -301,8 +295,8 @@
         let filteredData = [...dados];
         let currentPage = 1;
         const itemsPerPage = 10;
-        let statusChartInstance = null;
-        let turnoChartInstance = null;
+        let statusChart = null;
+        let turnoChart = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -310,8 +304,8 @@
                 document.documentElement.classList.add('dark');
             }
             initializeFilters();
-            applyDashboardFilters();
-            applyOperacaoFilters();
+            updateDashboard();
+            renderTable();
         });
 
         function initializeFilters() {
@@ -319,14 +313,14 @@
             const sortcodes = [...new Set(dados.map(d => d.sortcode))].sort();
             const sources = [...new Set(dados.map(d => d.trip_source))].sort();
 
-            // Dashboard filters
+            // Dashboard
             const dashTurno = document.getElementById('dash-turno');
             turnos.forEach(t => dashTurno.innerHTML += `<option value="${t}">${t}</option>`);
             
             const dashSortcode = document.getElementById('dash-sortcode');
             sortcodes.forEach(s => dashSortcode.innerHTML += `<option value="${s}">${s}</option>`);
 
-            // Operação filters
+            // Operação
             const opTurno = document.getElementById('op-turno');
             turnos.forEach(t => opTurno.innerHTML += `<option value="${t}">${t}</option>`);
             
@@ -383,7 +377,8 @@
             document.getElementById('dash-data-fim').value = '';
             document.getElementById('dash-turno').value = '';
             document.getElementById('dash-sortcode').value = '';
-            applyDashboardFilters();
+            filteredData = [...dados];
+            updateDashboard();
         }
 
         function updateDashboard() {
@@ -410,29 +405,68 @@
                 turnoCounts[d.turno] = (turnoCounts[d.turno] || 0) + 1;
             });
 
-            if (statusChartInstance) statusChartInstance.destroy();
-            statusChartInstance = new Chart(document.getElementById('statusChart'), {
+            // Destruir gráficos antigos
+            if (statusChart) {
+                statusChart.destroy();
+                statusChart = null;
+            }
+            if (turnoChart) {
+                turnoChart.destroy();
+                turnoChart = null;
+            }
+
+            // Criar novo gráfico de status
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(statusCounts),
-                    datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], borderWidth: 0 }]
+                    datasets: [{ 
+                        data: Object.values(statusCounts), 
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], 
+                        borderWidth: 0 
+                    }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { color: textColor, padding: 20 } 
+                        } 
+                    } 
+                }
             });
 
-            if (turnoChartInstance) turnoChartInstance.destroy();
-            turnoChartInstance = new Chart(document.getElementById('turnoChart'), {
+            // Criar novo gráfico de turno
+            const turnoCtx = document.getElementById('turnoChart').getContext('2d');
+            turnoChart = new Chart(turnoCtx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(turnoCounts),
-                    datasets: [{ data: Object.values(turnoCounts), backgroundColor: ['#EE4D2D', '#FF6B4A', '#D73211'], borderRadius: 8 }]
+                    datasets: [{ 
+                        data: Object.values(turnoCounts), 
+                        backgroundColor: ['#EE4D2D', '#FF6B4A', '#D73211'], 
+                        borderRadius: 8 
+                    }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false } 
+                    },
                     scales: {
-                        y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' } },
-                        x: { ticks: { color: textColor }, grid: { display: false } }
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { color: textColor },
+                            grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }
+                        },
+                        x: { 
+                            ticks: { color: textColor }, 
+                            grid: { display: false } 
+                        }
                     }
                 }
             });
@@ -472,7 +506,9 @@
             document.getElementById('op-sortcode').value = '';
             document.getElementById('op-source').value = '';
             document.getElementById('search-trip').value = '';
-            applyOperacaoFilters();
+            filteredData = [...dados];
+            currentPage = 1;
+            renderTable();
         }
 
         function renderTable() {
@@ -524,8 +560,20 @@
             if (item) item.justificativa = value;
         }
 
-        function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
-        function nextPage() { if (currentPage < Math.ceil(filteredData.length / itemsPerPage)) { currentPage++; renderTable(); } }
+        function previousPage() { 
+            if (currentPage > 1) { 
+                currentPage--; 
+                renderTable(); 
+            } 
+        }
+        
+        function nextPage() { 
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) { 
+                currentPage++; 
+                renderTable(); 
+            } 
+        }
     </script>
 </body>
 </html>
