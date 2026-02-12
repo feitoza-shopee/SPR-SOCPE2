@@ -6,6 +6,7 @@
     <title>SPR / SOC-PE2 - Sistema de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,6 +15,7 @@
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .chart-container { position: relative; height: 250px; width: 100%; }
+        .card-percentage { font-size: 0.75rem; opacity: 0.9; margin-top: 4px; }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
@@ -109,6 +111,7 @@
                             <div>
                                 <p class="text-white/80 text-sm font-medium mb-1">Total de Veículos</p>
                                 <h3 class="text-4xl font-bold" id="total-vehicles">0</h3>
+                                <p class="card-percentage" id="total-percent">100% do total</p>
                             </div>
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-truck text-2xl"></i>
@@ -122,6 +125,7 @@
                             <div>
                                 <p class="text-white/80 text-sm font-medium mb-1">Concluídos</p>
                                 <h3 class="text-4xl font-bold" id="status-concluido">0</h3>
+                                <p class="card-percentage" id="concluido-percent">0%</p>
                             </div>
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-check-circle text-2xl"></i>
@@ -135,6 +139,7 @@
                             <div>
                                 <p class="text-white/80 text-sm font-medium mb-1">Em Andamento</p>
                                 <h3 class="text-4xl font-bold" id="status-andamento">0</h3>
+                                <p class="card-percentage" id="andamento-percent">0%</p>
                             </div>
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-clock text-2xl"></i>
@@ -148,7 +153,7 @@
                             <div>
                                 <p class="text-white/80 text-sm font-medium mb-1">Abaixo do Target</p>
                                 <h3 class="text-4xl font-bold" id="below-target">0</h3>
-                                <p class="text-white/70 text-xs mt-1">Orders < 5.776</p>
+                                <p class="card-percentage" id="target-percent">0% dos veículos</p>
                             </div>
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                                 <i class="fas fa-exclamation-triangle text-2xl"></i>
@@ -158,7 +163,7 @@
                 </div>
 
                 <!-- Gráficos -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Distribuição por Status</h3>
                         <div class="chart-container">
@@ -169,6 +174,12 @@
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Veículos por Turno</h3>
                         <div class="chart-container">
                             <canvas id="turnoChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Justificativas</h3>
+                        <div class="chart-container">
+                            <canvas id="justificativaChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -268,6 +279,9 @@
     </div>
 
     <script>
+        // Registrar plugin de datalabels
+        Chart.register(ChartDataLabels);
+
         // DADOS REAIS
         const dados = [
             {trip_number: "LT0Q2C01YMQW1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Truck", sortcode: "HUB-LPE-11", cpt_realized: "2024-01-15 08:30", orders: 6200, trip_source: "FORECAST", justificativa: ""},
@@ -297,6 +311,8 @@
         const itemsPerPage = 10;
         let statusChart = null;
         let turnoChart = null;
+        let justificativaChart = null;
+        let totalGeral = dados.length;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -382,15 +398,32 @@
         }
 
         function updateDashboard() {
+            const totalAtual = filteredData.length;
             const uniqueTrips = new Set(filteredData.map(d => d.trip_number));
+            
+            // Total de veículos
             document.getElementById('total-vehicles').textContent = uniqueTrips.size;
+            document.getElementById('total-percent').textContent = `100% filtrado (${Math.round((totalAtual/totalGeral)*100)}% do total)`;
 
+            // Status counts
             const statusCounts = {};
             filteredData.forEach(d => statusCounts[d.trip_status] = (statusCounts[d.trip_status] || 0) + 1);
             
-            document.getElementById('status-concluido').textContent = statusCounts['Concluído'] || 0;
-            document.getElementById('status-andamento').textContent = statusCounts['Em Andamento'] || 0;
-            document.getElementById('below-target').textContent = filteredData.filter(d => d.orders < 5776).length;
+            const concluidos = statusCounts['Concluído'] || 0;
+            const andamento = statusCounts['Em Andamento'] || 0;
+            const abaixoTarget = filteredData.filter(d => d.orders < 5776).length;
+
+            // Concluídos
+            document.getElementById('status-concluido').textContent = concluidos;
+            document.getElementById('concluido-percent').textContent = `${totalAtual > 0 ? Math.round((concluidos/totalAtual)*100) : 0}% do filtro`;
+
+            // Em andamento
+            document.getElementById('status-andamento').textContent = andamento;
+            document.getElementById('andamento-percent').textContent = `${totalAtual > 0 ? Math.round((andamento/totalAtual)*100) : 0}% do filtro`;
+
+            // Abaixo do target
+            document.getElementById('below-target').textContent = abaixoTarget;
+            document.getElementById('target-percent').textContent = `${totalAtual > 0 ? Math.round((abaixoTarget/totalAtual)*100) : 0}% dos veículos`;
 
             updateCharts();
         }
@@ -399,23 +432,42 @@
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#9ca3af' : '#4b5563';
             
-            const statusCounts = {}, turnoCounts = {};
+            const statusCounts = {}, turnoCounts = {}, justificativaCounts = {};
+            
             filteredData.forEach(d => {
                 statusCounts[d.trip_status] = (statusCounts[d.trip_status] || 0) + 1;
                 turnoCounts[d.turno] = (turnoCounts[d.turno] || 0) + 1;
+                if (d.justificativa && d.justificativa !== '') {
+                    justificativaCounts[d.justificativa] = (justificativaCounts[d.justificativa] || 0) + 1;
+                }
             });
 
-            // Destruir gráficos antigos
-            if (statusChart) {
-                statusChart.destroy();
-                statusChart = null;
-            }
-            if (turnoChart) {
-                turnoChart.destroy();
-                turnoChart = null;
+            // Se não houver justificativas, mostrar "Sem justificativa"
+            if (Object.keys(justificativaCounts).length === 0) {
+                justificativaCounts['Sem justificativa'] = filteredData.length;
             }
 
-            // Criar novo gráfico de status
+            const total = filteredData.length;
+
+            // Destruir gráficos antigos
+            if (statusChart) { statusChart.destroy(); statusChart = null; }
+            if (turnoChart) { turnoChart.destroy(); turnoChart = null; }
+            if (justificativaChart) { justificativaChart.destroy(); justificativaChart = null; }
+
+            // Configuração comum de datalabels
+            const datalabelsConfig = {
+                color: textColor,
+                anchor: 'end',
+                align: 'end',
+                offset: 4,
+                font: { weight: 'bold', size: 12 },
+                formatter: (value, ctx) => {
+                    const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                    return `${value}\n(${percentage}%)`;
+                }
+            };
+
+            // Gráfico de Status (Doughnut)
             const statusCtx = document.getElementById('statusChart').getContext('2d');
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
@@ -424,22 +476,30 @@
                     datasets: [{ 
                         data: Object.values(statusCounts), 
                         backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], 
-                        borderWidth: 0 
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1f2937' : '#ffffff'
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { 
-                            position: 'bottom', 
-                            labels: { color: textColor, padding: 20 } 
-                        } 
+                        legend: { position: 'bottom', labels: { color: textColor, padding: 15 } },
+                        datalabels: {
+                            color: '#fff',
+                            anchor: 'center',
+                            align: 'center',
+                            font: { weight: 'bold', size: 14 },
+                            formatter: (value) => {
+                                const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                                return `${value}\n${percentage}%`;
+                            }
+                        }
                     } 
                 }
             });
 
-            // Criar novo gráfico de turno
+            // Gráfico de Turno (Bar)
             const turnoCtx = document.getElementById('turnoChart').getContext('2d');
             turnoChart = new Chart(turnoCtx, {
                 type: 'bar',
@@ -448,14 +508,16 @@
                     datasets: [{ 
                         data: Object.values(turnoCounts), 
                         backgroundColor: ['#EE4D2D', '#FF6B4A', '#D73211'], 
-                        borderRadius: 8 
+                        borderRadius: 8,
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true, 
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { display: false } 
+                        legend: { display: false },
+                        datalabels: datalabelsConfig
                     },
                     scales: {
                         y: { 
@@ -466,6 +528,38 @@
                         x: { 
                             ticks: { color: textColor }, 
                             grid: { display: false } 
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Justificativas (Bar horizontal ou Pie)
+            const justCtx = document.getElementById('justificativaChart').getContext('2d');
+            justificativaChart = new Chart(justCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(justificativaCounts),
+                    datasets: [{ 
+                        data: Object.values(justificativaCounts), 
+                        backgroundColor: ['#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'], 
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1f2937' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { color: textColor, padding: 10, font: { size: 10 } } },
+                        datalabels: {
+                            color: '#fff',
+                            anchor: 'center',
+                            align: 'center',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value) => {
+                                const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                                return `${value}\n${percentage}%`;
+                            }
                         }
                     }
                 }
@@ -557,7 +651,13 @@
 
         function updateJustificativa(tripNumber, value) {
             const item = dados.find(d => d.trip_number === tripNumber);
-            if (item) item.justificativa = value;
+            if (item) {
+                item.justificativa = value;
+                // Atualizar gráfico se estiver no dashboard
+                if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
+                    updateCharts();
+                }
+            }
         }
 
         function previousPage() { 
