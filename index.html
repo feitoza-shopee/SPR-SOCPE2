@@ -28,20 +28,10 @@
         .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
     
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl text-center">
-            <div class="loading mb-4 border-blue-500 border-t-transparent w-12 h-12"></div>
-            <p class="text-gray-600 dark:text-gray-300 font-medium">Carregando dados...</p>
-        </div>
-    </div>
-
     <!-- Botão Dark Mode -->
     <button onclick="toggleDarkMode()" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform duration-200 group">
         <i class="fas fa-moon text-gray-600 dark:text-yellow-400 text-xl group-hover:rotate-12 transition-transform"></i>
@@ -66,7 +56,7 @@
             </nav>
             <div class="absolute bottom-0 w-full p-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-                    <i class="fas fa-database mr-2"></i><span id="last-update">Carregando...</span>
+                    <i class="fas fa-database mr-2"></i><span id="last-update">Modo Demonstração</span>
                 </div>
             </div>
         </aside>
@@ -216,87 +206,45 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO - SUBSTITUA PELA SUA URL DO GOOGLE APPS SCRIPT DEPOIS
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/exec';
-        
-        let dados = [];
-        let filteredData = [];
+        // DADOS LOCAIS (sem API - funciona 100% offline)
+        const dados = [
+            {trip_number: "TRP00001", turno: "Manhã", trip_status: "Concluído", vehicle_type_name: "Truck", sortcode: "SC001", cpt_realized: "2024-01-15 08:30", orders: 6200, trip_source: "Hub SP", justificativa: ""},
+            {trip_number: "TRP00002", turno: "Tarde", trip_status: "Em Andamento", vehicle_type_name: "Van", sortcode: "SC002", cpt_realized: "2024-01-15 14:20", orders: 4500, trip_source: "Hub RJ", justificativa: "Falta de pacotes"},
+            {trip_number: "TRP00003", turno: "Noite", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "SC003", cpt_realized: "2024-01-15 22:00", orders: 7100, trip_source: "Hub MG", justificativa: ""},
+            {trip_number: "TRP00004", turno: "Manhã", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "SC001", cpt_realized: "2024-01-16 09:15", orders: 3200, trip_source: "Hub RS", justificativa: "Perfil volumoso"},
+            {trip_number: "TRP00005", turno: "Tarde", trip_status: "Cancelado", vehicle_type_name: "Truck", sortcode: "SC004", cpt_realized: "2024-01-16 16:45", orders: 5800, trip_source: "Hub SP", justificativa: ""},
+            {trip_number: "TRP00006", turno: "Noite", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "SC002", cpt_realized: "2024-01-16 20:30", orders: 4900, trip_source: "Hub RJ", justificativa: ""},
+            {trip_number: "TRP00007", turno: "Manhã", trip_status: "Em Andamento", vehicle_type_name: "Carreta", sortcode: "SC005", cpt_realized: "2024-01-17 07:00", orders: 8100, trip_source: "Hub MG", justificativa: ""},
+            {trip_number: "TRP00008", turno: "Tarde", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "SC003", cpt_realized: "2024-01-17 15:30", orders: 2100, trip_source: "Hub RS", justificativa: "Falta de HC"},
+            {trip_number: "TRP00009", turno: "Noite", trip_status: "Pendente", vehicle_type_name: "Truck", sortcode: "SC001", cpt_realized: "2024-01-17 23:00", orders: 6500, trip_source: "Hub SP", justificativa: ""},
+            {trip_number: "TRP00010", turno: "Manhã", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "SC004", cpt_realized: "2024-01-18 08:00", orders: 5400, trip_source: "Hub RJ", justificativa: ""},
+            {trip_number: "TRP00011", turno: "Tarde", trip_status: "Em Andamento", vehicle_type_name: "Carreta", sortcode: "SC002", cpt_realized: "2024-01-18 13:20", orders: 3800, trip_source: "Hub MG", justificativa: "Falta de pacotes"},
+            {trip_number: "TRP00012", turno: "Noite", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "SC005", cpt_realized: "2024-01-18 21:45", orders: 7200, trip_source: "Hub RS", justificativa: ""},
+            {trip_number: "TRP00013", turno: "Manhã", trip_status: "Cancelado", vehicle_type_name: "Truck", sortcode: "SC003", cpt_realized: "2024-01-19 06:30", orders: 4100, trip_source: "Hub SP", justificativa: ""},
+            {trip_number: "TRP00014", turno: "Tarde", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "SC001", cpt_realized: "2024-01-19 14:00", orders: 5900, trip_source: "Hub RJ", justificativa: ""},
+            {trip_number: "TRP00015", turno: "Noite", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "SC004", cpt_realized: "2024-01-19 22:15", orders: 2800, trip_source: "Hub MG", justificativa: "Perfil volumoso"}
+        ];
+
+        let filteredData = [...dados];
         let currentPage = 1;
         const itemsPerPage = 10;
         let statusChartInstance = null;
         let turnoChartInstance = null;
 
-        // Dados mock para teste offline (funciona sem internet)
-        function generateMockData() {
-            const statuses = ['Concluído', 'Em Andamento', 'Pendente', 'Cancelado'];
-            const turnos = ['Manhã', 'Tarde', 'Noite'];
-            const vehicleTypes = ['Truck', 'Van', 'Carreta', 'VUC'];
-            const sortcodes = ['SC001', 'SC002', 'SC003', 'SC004', 'SC005'];
-            const sources = ['Hub SP', 'Hub RJ', 'Hub MG', 'Hub RS'];
-            
-            const data = [];
-            for (let i = 1; i <= 150; i++) {
-                data.push({
-                    trip_number: `TRP${String(i).padStart(5, '0')}`,
-                    turno: turnos[Math.floor(Math.random() * turnos.length)],
-                    trip_status: statuses[Math.floor(Math.random() * statuses.length)],
-                    vehicle_type_name: vehicleTypes[Math.floor(Math.random() * vehicleTypes.length)],
-                    sortcode: sortcodes[Math.floor(Math.random() * sortcodes.length)],
-                    cpt_realized: '2024-01-' + String(Math.floor(Math.random() * 28) + 1).padStart(2, '0') + ' ' + String(Math.floor(Math.random() * 24)).padStart(2, '0') + ':00',
-                    orders: Math.floor(Math.random() * 8000) + 1000,
-                    trip_source: sources[Math.floor(Math.random() * sources.length)],
-                    justificativa: ''
-                });
-            }
-            return data;
-        }
-
-        async function loadData() {
-            const loading = document.getElementById('loading-overlay');
-            loading.classList.remove('hidden');
-            
-            try {
-                // Tenta carregar da API (quando configurar o Google Apps Script)
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('API não respondeu');
-                
-                const data = await response.json();
-                
-                // Mapeia os dados da planilha (ajuste os nomes das colunas conforme sua planilha)
-                dados = data.map(row => ({
-                    trip_number: row.trip_number || row.TripNumber || row['Trip Number'] || '',
-                    turno: row.turno || row.Turno || '',
-                    trip_status: row.trip_status || row.Status || row['Trip Status'] || '',
-                    vehicle_type_name: row.vehicle_type_name || row.VehicleType || row['Vehicle Type'] || '',
-                    sortcode: row.sortcode || row.Sortcode || '',
-                    cpt_realized: row.cpt_realized || row.CPT || row['CPT Realized'] || '',
-                    orders: parseInt(row.orders || row.Orders || 0),
-                    trip_source: row.trip_source || row.Source || row['Trip Source'] || '',
-                    justificativa: row.justificativa || row.Justificativa || ''
-                })).filter(row => row.trip_number); // Remove linhas vazias
-
-                document.getElementById('last-update').textContent = 'Dados ao vivo - ' + new Date().toLocaleTimeString();
-                
-            } catch (error) {
-                console.log('Usando dados de demonstração:', error);
-                dados = generateMockData();
-                document.getElementById('last-update').textContent = 'Modo demonstração (offline)';
-                document.getElementById('last-update').classList.add('text-yellow-500');
-            }
-            
-            filteredData = [...dados];
+        function init() {
             initializeFilters();
             applyFilters();
             renderTable();
-            loading.classList.add('hidden');
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            }
         }
 
         function initializeFilters() {
-            const turnos = [...new Set(dados.map(d => d.turno))].filter(Boolean).sort();
-            const sortcodes = [...new Set(dados.map(d => d.sortcode))].filter(Boolean).sort();
-            const statuses = [...new Set(dados.map(d => d.trip_status))].filter(Boolean).sort();
+            const turnos = [...new Set(dados.map(d => d.turno))].sort();
+            const sortcodes = [...new Set(dados.map(d => d.sortcode))].sort();
+            const statuses = [...new Set(dados.map(d => d.trip_status))].sort();
 
-            // Preencher selects do dashboard
             const turnoSelect = document.getElementById('filter-turno');
             turnos.forEach(t => turnoSelect.innerHTML += `<option value="${t}">${t}</option>`);
             
@@ -448,7 +396,7 @@
 
             document.getElementById('table-info').textContent = `Mostrando ${Math.min(tableData.length, start + 1)}-${Math.min(tableData.length, start + itemsPerPage)} de ${tableData.length} registros`;
             document.getElementById('btn-prev').disabled = currentPage === 1;
-            document.getElementById('btn-next').disabled = currentPage >= totalPages;
+            document.getElementById('btn-next').disabled = currentPage >= totalPages || totalPages === 0;
         }
 
         function updateJustificativa(tripNumber, value) {
@@ -461,11 +409,8 @@
         function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
         function nextPage() { currentPage++; renderTable(); }
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark');
-            loadData();
-        });
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
