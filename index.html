@@ -6,7 +6,6 @@
     <title>SPR / SOC-PE2 - Sistema de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,8 +13,17 @@
         .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .chart-container { position: relative; height: 250px; width: 100%; }
+        .chart-container { position: relative; height: 220px; width: 100%; }
         .card-percentage { font-size: 0.75rem; opacity: 0.9; margin-top: 4px; }
+        /* Sidebar mais compacta */
+        .sidebar-compact { width: 220px; }
+        .sidebar-compact .logo-container { padding: 1rem; }
+        .sidebar-compact .logo-icon { width: 48px; height: 48px; }
+        .sidebar-compact .logo-icon i { font-size: 1.5rem; }
+        .sidebar-compact h1 { font-size: 1.1rem; }
+        .sidebar-compact nav { margin-top: 0.5rem; padding: 0 0.5rem; }
+        .sidebar-compact nav button { padding: 0.6rem 0.8rem; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .sidebar-compact nav button i { width: 1.2rem; margin-right: 0.5rem; }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
@@ -26,29 +34,29 @@
     </button>
 
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-72 bg-white dark:bg-gray-800 shadow-xl z-40 transition-all duration-300 flex flex-col">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 text-center">
-                <div class="flex justify-center mb-4">
-                    <div class="w-20 h-20 bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-shopping-bag text-white text-4xl"></i>
+        <!-- Sidebar Compacta -->
+        <aside class="sidebar-compact bg-white dark:bg-gray-800 shadow-xl z-40 transition-all duration-300 flex flex-col">
+            <div class="logo-container border-b border-gray-200 dark:border-gray-700 text-center">
+                <div class="flex justify-center mb-2">
+                    <div class="logo-icon bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-shopping-bag text-white"></i>
                     </div>
                 </div>
-                <h1 class="text-2xl font-bold text-[#EE4D2D] mb-1">SPR / SOC-PE2</h1>
+                <h1 class="font-bold text-[#EE4D2D] mb-0">SPR / SOC-PE2</h1>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Sistema de Operações</p>
             </div>
             
-            <nav class="mt-6 px-4 flex-1">
-                <button onclick="showSection('dashboard')" id="nav-dashboard" class="w-full flex items-center px-4 py-3 mb-2 rounded-xl bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white font-medium transition-all hover:translate-x-2 shadow-md">
-                    <i class="fas fa-chart-pie w-6"></i><span>Dashboard</span>
+            <nav class="flex-1">
+                <button onclick="showSection('dashboard')" id="nav-dashboard" class="w-full flex items-center rounded-xl bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white font-medium transition-all hover:translate-x-1 shadow-md">
+                    <i class="fas fa-chart-pie"></i><span>Dashboard</span>
                 </button>
-                <button onclick="showSection('operacao')" id="nav-operacao" class="w-full flex items-center px-4 py-3 mb-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-2">
-                    <i class="fas fa-table w-6"></i><span>Operação</span>
+                <button onclick="showSection('operacao')" id="nav-operacao" class="w-full flex items-center rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-1">
+                    <i class="fas fa-table"></i><span>Operação</span>
                 </button>
             </nav>
             
-            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+            <div class="p-3 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
                     <i class="fas fa-database mr-2 text-[#EE4D2D]"></i>
                     <span>Dados Locais</span>
                 </div>
@@ -58,126 +66,126 @@
         <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 relative">
             
             <!-- Dashboard Section -->
-            <section id="dashboard-section" class="p-8 fade-in">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Dashboard</h2>
-                    <p class="text-gray-600 dark:text-gray-400">Visão geral das operações SPR / SOC-PE2</p>
+            <section id="dashboard-section" class="p-6 fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-1">Dashboard</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Visão geral das operações SPR / SOC-PE2</p>
                 </div>
 
                 <!-- Filtro por Período -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100 dark:border-gray-700">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 mb-6 border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-semibold text-gray-800 dark:text-white flex items-center">
                             <i class="fas fa-calendar-alt mr-2 text-[#EE4D2D]"></i>Filtro por Período
                         </h3>
-                        <button onclick="clearDashboardFilters()" class="text-sm text-[#EE4D2D] hover:text-[#D73211] font-medium">
+                        <button onclick="clearDashboardFilters()" class="text-xs text-[#EE4D2D] hover:text-[#D73211] font-medium">
                             Limpar Filtros
                         </button>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Inicial</label>
-                            <input type="date" id="dash-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Data Inicial</label>
+                            <input type="date" id="dash-data-inicio" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Final</label>
-                            <input type="date" id="dash-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Data Final</label>
+                            <input type="date" id="dash-data-fim" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Turno</label>
-                            <select id="dash-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Turno</label>
+                            <select id="dash-turno" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos (T1, T2, T3)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sortcode</label>
-                            <select id="dash-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Sortcode</label>
+                            <select id="dash-sortcode" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <button onclick="applyDashboardFilters()" class="px-6 py-2 bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
+                    <div class="mt-3">
+                        <button onclick="applyDashboardFilters()" class="px-4 py-2 text-sm bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
                             <i class="fas fa-filter mr-2"></i>Aplicar Filtros
                         </button>
                     </div>
                 </div>
 
                 <!-- Cards de Métricas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-2xl p-6 text-white shadow-lg card-hover relative overflow-hidden">
-                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-[#EE4D2D] to-[#D73211] rounded-xl p-4 text-white shadow-lg card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full"></div>
                         <div class="flex items-center justify-between relative z-10">
                             <div>
-                                <p class="text-white/80 text-sm font-medium mb-1">Total de Veículos</p>
-                                <h3 class="text-4xl font-bold" id="total-vehicles">0</h3>
+                                <p class="text-white/80 text-xs font-medium mb-1">Total de Veículos</p>
+                                <h3 class="text-3xl font-bold" id="total-vehicles">0</h3>
                                 <p class="card-percentage" id="total-percent">100% do total</p>
                             </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-truck text-2xl"></i>
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-truck text-xl"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg card-hover relative overflow-hidden">
-                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full"></div>
                         <div class="flex items-center justify-between relative z-10">
                             <div>
-                                <p class="text-white/80 text-sm font-medium mb-1">Concluídos</p>
-                                <h3 class="text-4xl font-bold" id="status-concluido">0</h3>
+                                <p class="text-white/80 text-xs font-medium mb-1">Concluídos</p>
+                                <h3 class="text-3xl font-bold" id="status-concluido">0</h3>
                                 <p class="card-percentage" id="concluido-percent">0%</p>
                             </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-check-circle text-2xl"></i>
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check-circle text-xl"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 text-white shadow-lg card-hover relative overflow-hidden">
-                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-4 text-white shadow-lg card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full"></div>
                         <div class="flex items-center justify-between relative z-10">
                             <div>
-                                <p class="text-white/80 text-sm font-medium mb-1">Em Andamento</p>
-                                <h3 class="text-4xl font-bold" id="status-andamento">0</h3>
+                                <p class="text-white/80 text-xs font-medium mb-1">Em Andamento</p>
+                                <h3 class="text-3xl font-bold" id="status-andamento">0</h3>
                                 <p class="card-percentage" id="andamento-percent">0%</p>
                             </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-clock text-2xl"></i>
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-xl"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-lg card-hover relative overflow-hidden">
-                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg card-hover relative overflow-hidden">
+                        <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full"></div>
                         <div class="flex items-center justify-between relative z-10">
                             <div>
-                                <p class="text-white/80 text-sm font-medium mb-1">Abaixo do Target</p>
-                                <h3 class="text-4xl font-bold" id="below-target">0</h3>
+                                <p class="text-white/80 text-xs font-medium mb-1">Abaixo do Target</p>
+                                <h3 class="text-3xl font-bold" id="below-target">0</h3>
                                 <p class="card-percentage" id="target-percent">0% dos veículos</p>
                             </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-2xl"></i>
+                            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-xl"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gráficos -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Distribuição por Status</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-3">Distribuição por Status</h3>
                         <div class="chart-container">
                             <canvas id="statusChart"></canvas>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Veículos por Turno</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-3">Veículos por Turno</h3>
                         <div class="chart-container">
                             <canvas id="turnoChart"></canvas>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Justificativas</h3>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 border border-gray-100 dark:border-gray-700">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-3">Justificativas</h3>
                         <div class="chart-container">
                             <canvas id="justificativaChart"></canvas>
                         </div>
@@ -186,90 +194,90 @@
             </section>
 
             <!-- Operação Section -->
-            <section id="operacao-section" class="p-8 hidden fade-in">
-                <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <section id="operacao-section" class="p-6 hidden fade-in">
+                <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Operação</h2>
-                        <p class="text-gray-600 dark:text-gray-400">Gestão detalhada das viagens</p>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-1">Operação</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Gestão detalhada das viagens</p>
                     </div>
                     
-                    <div class="relative w-full md:w-96">
+                    <div class="relative w-full md:w-80">
                         <input type="text" id="search-trip" placeholder="Buscar por Trip Number..." 
-                            class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] shadow-lg">
-                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D] shadow-lg">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                     </div>
                 </div>
 
                 <!-- Filtros Operação -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6 border border-gray-100 dark:border-gray-700">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 mb-4 border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-white flex items-center">
                             <i class="fas fa-filter mr-2 text-[#EE4D2D]"></i>Filtros
                         </h3>
-                        <button onclick="clearOperacaoFilters()" class="text-sm text-[#EE4D2D] hover:text-[#D73211] font-medium">
+                        <button onclick="clearOperacaoFilters()" class="text-xs text-[#EE4D2D] hover:text-[#D73211] font-medium">
                             Limpar Filtros
                         </button>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Inicial</label>
-                            <input type="date" id="op-data-inicio" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Data Inicial</label>
+                            <input type="date" id="op-data-inicio" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data Final</label>
-                            <input type="date" id="op-data-fim" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Data Final</label>
+                            <input type="date" id="op-data-fim" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Turno</label>
-                            <select id="op-turno" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Turno</label>
+                            <select id="op-turno" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sortcode</label>
-                            <select id="op-sortcode" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Sortcode</label>
+                            <select id="op-sortcode" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todos</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Origem</label>
-                            <select id="op-source" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
+                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Origem</label>
+                            <select id="op-source" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#EE4D2D]">
                                 <option value="">Todas</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <button onclick="applyOperacaoFilters()" class="px-6 py-2 bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
+                    <div class="mt-3">
+                        <button onclick="applyOperacaoFilters()" class="px-4 py-2 text-sm bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white rounded-lg hover:shadow-lg transition-all">
                             <i class="fas fa-filter mr-2"></i>Aplicar Filtros
                         </button>
                     </div>
                 </div>
 
                 <!-- Tabela -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white">
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Trip Number</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Turno</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Tipo Veículo</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Sortcode</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">CPT Realizado</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Orders</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Origem</th>
-                                    <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider">Justificativa</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Trip Number</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Turno</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Status</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Tipo</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Sortcode</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">CPT</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Orders</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Origem</th>
+                                    <th class="px-4 py-3 text-xs font-semibold uppercase">Justificativa</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                         </table>
                     </div>
-                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
-                        <span class="text-sm text-gray-600 dark:text-gray-400" id="table-info">Carregando...</span>
+                    <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
+                        <span class="text-xs text-gray-600 dark:text-gray-400" id="table-info">Carregando...</span>
                         <div class="flex gap-2">
-                            <button onclick="previousPage()" class="px-3 py-1 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-50" id="btn-prev">Anterior</button>
-                            <button onclick="nextPage()" class="px-3 py-1 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-50" id="btn-next">Próximo</button>
+                            <button onclick="previousPage()" class="px-3 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-50" id="btn-prev">Anterior</button>
+                            <button onclick="nextPage()" class="px-3 py-1 text-xs rounded bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 disabled:opacity-50" id="btn-next">Próximo</button>
                         </div>
                     </div>
                 </div>
@@ -279,11 +287,9 @@
     </div>
 
     <script>
-        // Registrar plugin de datalabels
-        Chart.register(ChartDataLabels);
-
-        // DADOS REAIS
+        // DADOS REAIS COM MAIS DIAS (janeiro a março)
         const dados = [
+            // Janeiro
             {trip_number: "LT0Q2C01YMQW1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Truck", sortcode: "HUB-LPE-11", cpt_realized: "2024-01-15 08:30", orders: 6200, trip_source: "FORECAST", justificativa: ""},
             {trip_number: "LT0Q2C01YKCV1", turno: "T2", trip_status: "Em Andamento", vehicle_type_name: "Van", sortcode: "HUB-LPE-02", cpt_realized: "2024-01-15 14:20", orders: 4500, trip_source: "SPOT", justificativa: "Falta de pacotes"},
             {trip_number: "LT0Q2C01YLXQ1", turno: "T3", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "HUB-LMA-02", cpt_realized: "2024-01-15 22:00", orders: 7100, trip_source: "FORECAST", justificativa: ""},
@@ -294,16 +300,28 @@
             {trip_number: "LT1Q2C01YVMQ1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LCE-02", cpt_realized: "2024-01-17 15:30", orders: 2100, trip_source: "SPOT", justificativa: "Falta de HC"},
             {trip_number: "LT1Q2C01YVMR1", turno: "T3", trip_status: "Pendente", vehicle_type_name: "Truck", sortcode: "HUB-LPE-11", cpt_realized: "2024-01-17 23:00", orders: 6500, trip_source: "FORECAST", justificativa: ""},
             {trip_number: "LT1Q2C01YVMS1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LPE-02", cpt_realized: "2024-01-18 08:00", orders: 5400, trip_source: "SPOT", justificativa: ""},
-            {trip_number: "LT1Q2C01YVMT1", turno: "T2", trip_status: "Em Andamento", vehicle_type_name: "Carreta", sortcode: "HUB-LMA-02", cpt_realized: "2024-01-18 13:20", orders: 3800, trip_source: "FORECAST", justificativa: "Falta de pacotes"},
-            {trip_number: "LT1Q2C01YVMU1", turno: "T3", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LCE-05", cpt_realized: "2024-01-18 21:45", orders: 7200, trip_source: "SPOT", justificativa: ""},
-            {trip_number: "LT1Q2C01YVMV1", turno: "T1", trip_status: "Cancelado", vehicle_type_name: "Truck", sortcode: "HUB-LCE-01", cpt_realized: "2024-01-19 06:30", orders: 4100, trip_source: "FORECAST", justificativa: ""},
-            {trip_number: "LT1Q2C01YVMW1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LRN-01", cpt_realized: "2024-01-19 14:00", orders: 5900, trip_source: "SPOT", justificativa: ""},
-            {trip_number: "LT1Q2C01YVMX1", turno: "T3", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "FBS-PE3", cpt_realized: "2024-01-19 22:15", orders: 2800, trip_source: "FORECAST", justificativa: "Perfil volumoso"},
-            {trip_number: "LT1Q2C01YVMY1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LCE-02", cpt_realized: "2024-01-20 07:45", orders: 6300, trip_source: "SPOT", justificativa: ""},
-            {trip_number: "LT1Q2C01YVMZ1", turno: "T2", trip_status: "Em Andamento", vehicle_type_name: "Truck", sortcode: "HUB-LPE-11", cpt_realized: "2024-01-20 15:20", orders: 4700, trip_source: "FORECAST", justificativa: "Falta de pacotes"},
-            {trip_number: "LT1Q2C01YVN01", turno: "T3", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LPE-02", cpt_realized: "2024-01-20 23:00", orders: 7500, trip_source: "SPOT", justificativa: ""},
-            {trip_number: "LT1Q2C01YVN11", turno: "T1", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "HUB-LMA-02", cpt_realized: "2024-01-21 08:00", orders: 3100, trip_source: "FORECAST", justificativa: "Falta de HC"},
-            {trip_number: "LT1Q2C01YVN21", turno: "T2", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LCE-05", cpt_realized: "2024-01-21 16:30", orders: 8200, trip_source: "SPOT", justificativa: ""}
+            // Fevereiro
+            {trip_number: "LT2Q2C01YABC1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "Truck", sortcode: "HUB-LMA-02", cpt_realized: "2024-02-05 10:00", orders: 7200, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT2Q2C01YDEF1", turno: "T3", trip_status: "Em Andamento", vehicle_type_name: "Van", sortcode: "HUB-LCE-05", cpt_realized: "2024-02-05 16:30", orders: 3800, trip_source: "SPOT", justificativa: "Falta de pacotes"},
+            {trip_number: "LT2Q2C01YGHI1", turno: "T1", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "HUB-LCE-01", cpt_realized: "2024-02-06 08:15", orders: 5900, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT2Q2C01YJKL1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LRN-01", cpt_realized: "2024-02-06 14:45", orders: 4300, trip_source: "SPOT", justificativa: "Perfil volumoso"},
+            {trip_number: "LT2Q2C01YMNO1", turno: "T3", trip_status: "Cancelado", vehicle_type_name: "Truck", sortcode: "FBS-PE3", cpt_realized: "2024-02-07 09:00", orders: 6100, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT2Q2C01YPQR1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LCE-02", cpt_realized: "2024-02-07 17:20", orders: 5200, trip_source: "SPOT", justificativa: ""},
+            {trip_number: "LT2Q2C01YSTU1", turno: "T2", trip_status: "Em Andamento", vehicle_type_name: "Carreta", sortcode: "HUB-LPE-11", cpt_realized: "2024-02-08 11:30", orders: 7800, trip_source: "FORECAST", justificativa: "Falta de HC"},
+            {trip_number: "LT2Q2C01YVWX1", turno: "T3", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LPE-02", cpt_realized: "2024-02-08 20:00", orders: 3500, trip_source: "SPOT", justificativa: ""},
+            {trip_number: "LT2Q2C01YYZA1", turno: "T1", trip_status: "Pendente", vehicle_type_name: "Truck", sortcode: "HUB-LMA-02", cpt_realized: "2024-02-09 07:45", orders: 6800, trip_source: "FORECAST", justificativa: "Falta de pacotes"},
+            {trip_number: "LT2Q2C01YZZB1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LCE-05", cpt_realized: "2024-02-09 15:15", orders: 4900, trip_source: "SPOT", justificativa: ""},
+            // Março
+            {trip_number: "LT3Q2C01YAAA1", turno: "T3", trip_status: "Concluído", vehicle_type_name: "Carreta", sortcode: "HUB-LCE-01", cpt_realized: "2024-03-01 08:00", orders: 7500, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT3Q2C01YBBB1", turno: "T1", trip_status: "Em Andamento", vehicle_type_name: "VUC", sortcode: "HUB-LRN-01", cpt_realized: "2024-03-01 14:30", orders: 4100, trip_source: "SPOT", justificativa: "Perfil volumoso"},
+            {trip_number: "LT3Q2C01YCCC1", turno: "T2", trip_status: "Pendente", vehicle_type_name: "Truck", sortcode: "FBS-PE3", cpt_realized: "2024-03-02 09:30", orders: 6300, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT3Q2C01YDDD1", turno: "T3", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LCE-02", cpt_realized: "2024-03-02 18:00", orders: 5600, trip_source: "SPOT", justificativa: "Falta de pacotes"},
+            {trip_number: "LT3Q2C01YEEE1", turno: "T1", trip_status: "Cancelado", vehicle_type_name: "Carreta", sortcode: "HUB-LPE-11", cpt_realized: "2024-03-03 07:00", orders: 7200, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT3Q2C01YFFF1", turno: "T2", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LPE-02", cpt_realized: "2024-03-03 16:45", orders: 3900, trip_source: "SPOT", justificativa: "Falta de HC"},
+            {trip_number: "LT3Q2C01YGGG1", turno: "T3", trip_status: "Em Andamento", vehicle_type_name: "Truck", sortcode: "HUB-LMA-02", cpt_realized: "2024-03-04 10:15", orders: 8400, trip_source: "FORECAST", justificativa: ""},
+            {trip_number: "LT3Q2C01YHHH1", turno: "T1", trip_status: "Concluído", vehicle_type_name: "Van", sortcode: "HUB-LCE-05", cpt_realized: "2024-03-04 19:30", orders: 4700, trip_source: "SPOT", justificativa: "Perfil volumoso"},
+            {trip_number: "LT3Q2C01YIII1", turno: "T2", trip_status: "Pendente", vehicle_type_name: "Carreta", sortcode: "HUB-LCE-01", cpt_realized: "2024-03-05 08:45", orders: 6100, trip_source: "FORECAST", justificativa: "Falta de pacotes"},
+            {trip_number: "LT3Q2C01YJJJ1", turno: "T3", trip_status: "Concluído", vehicle_type_name: "VUC", sortcode: "HUB-LRN-01", cpt_realized: "2024-03-05 17:00", orders: 5300, trip_source: "SPOT", justificativa: ""}
         ];
 
         let filteredData = [...dados];
@@ -350,18 +368,19 @@
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-            updateCharts();
+            // Forçar recriação dos gráficos com novas cores
+            setTimeout(updateCharts, 100);
         }
 
         function showSection(section) {
             document.getElementById('dashboard-section').classList.add('hidden');
             document.getElementById('operacao-section').classList.add('hidden');
             
-            document.getElementById('nav-dashboard').className = 'w-full flex items-center px-4 py-3 mb-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-2';
-            document.getElementById('nav-operacao').className = 'w-full flex items-center px-4 py-3 mb-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-2';
+            document.getElementById('nav-dashboard').className = 'w-full flex items-center rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-1 text-sm py-2 px-3';
+            document.getElementById('nav-operacao').className = 'w-full flex items-center rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 font-medium transition-all hover:translate-x-1 text-sm py-2 px-3';
             
             document.getElementById(section + '-section').classList.remove('hidden');
-            document.getElementById('nav-' + section).className = 'w-full flex items-center px-4 py-3 mb-2 rounded-xl bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white font-medium transition-all hover:translate-x-2 shadow-md';
+            document.getElementById('nav-' + section).className = 'w-full flex items-center rounded-xl bg-gradient-to-r from-[#EE4D2D] to-[#D73211] text-white font-medium transition-all hover:translate-x-1 shadow-md text-sm py-2 px-3';
             
             if (section === 'dashboard') setTimeout(updateCharts, 100);
         }
@@ -403,7 +422,8 @@
             
             // Total de veículos
             document.getElementById('total-vehicles').textContent = uniqueTrips.size;
-            document.getElementById('total-percent').textContent = `100% filtrado (${Math.round((totalAtual/totalGeral)*100)}% do total)`;
+            const percentTotal = totalGeral > 0 ? Math.round((totalAtual/totalGeral)*100) : 0;
+            document.getElementById('total-percent').textContent = `${totalAtual} registros (${percentTotal}% do total)`;
 
             // Status counts
             const statusCounts = {};
@@ -413,17 +433,20 @@
             const andamento = statusCounts['Em Andamento'] || 0;
             const abaixoTarget = filteredData.filter(d => d.orders < 5776).length;
 
-            // Concluídos
+            // Concluídos - CORRIGIDO
             document.getElementById('status-concluido').textContent = concluidos;
-            document.getElementById('concluido-percent').textContent = `${totalAtual > 0 ? Math.round((concluidos/totalAtual)*100) : 0}% do filtro`;
+            const percentConcluido = totalAtual > 0 ? Math.round((concluidos/totalAtual)*100) : 0;
+            document.getElementById('concluido-percent').textContent = `${percentConcluido}% do filtro`;
 
-            // Em andamento
+            // Em andamento - CORRIGIDO
             document.getElementById('status-andamento').textContent = andamento;
-            document.getElementById('andamento-percent').textContent = `${totalAtual > 0 ? Math.round((andamento/totalAtual)*100) : 0}% do filtro`;
+            const percentAndamento = totalAtual > 0 ? Math.round((andamento/totalAtual)*100) : 0;
+            document.getElementById('andamento-percent').textContent = `${percentAndamento}% do filtro`;
 
-            // Abaixo do target
+            // Abaixo do target - CORRIGIDO
             document.getElementById('below-target').textContent = abaixoTarget;
-            document.getElementById('target-percent').textContent = `${totalAtual > 0 ? Math.round((abaixoTarget/totalAtual)*100) : 0}% dos veículos`;
+            const percentTarget = totalAtual > 0 ? Math.round((abaixoTarget/totalAtual)*100) : 0;
+            document.getElementById('target-percent').textContent = `${percentTarget}% dos veículos`;
 
             updateCharts();
         }
@@ -431,6 +454,7 @@
         function updateCharts() {
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#9ca3af' : '#4b5563';
+            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
             
             const statusCounts = {}, turnoCounts = {}, justificativaCounts = {};
             
@@ -454,20 +478,33 @@
             if (turnoChart) { turnoChart.destroy(); turnoChart = null; }
             if (justificativaChart) { justificativaChart.destroy(); justificativaChart = null; }
 
-            // Configuração comum de datalabels
-            const datalabelsConfig = {
-                color: textColor,
-                anchor: 'end',
-                align: 'end',
-                offset: 4,
-                font: { weight: 'bold', size: 12 },
-                formatter: (value, ctx) => {
-                    const percentage = total > 0 ? Math.round((value/total)*100) : 0;
-                    return `${value}\n(${percentage}%)`;
+            // Plugin para desenhar rótulos no gráfico de barras
+            const barLabelsPlugin = {
+                id: 'barLabels',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const value = dataset.data[index];
+                            const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                            
+                            ctx.fillStyle = textColor;
+                            ctx.font = 'bold 11px Inter';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            
+                            const x = bar.x;
+                            const y = bar.y - 5;
+                            
+                            ctx.fillText(`${value}`, x, y);
+                            ctx.fillText(`(${percentage}%)`, x, y - 12);
+                        });
+                    });
                 }
             };
 
-            // Gráfico de Status (Doughnut)
+            // Gráfico de Status (Doughnut) - RÓTULOS SIMPLIFICADOS
             const statusCtx = document.getElementById('statusChart').getContext('2d');
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
@@ -483,23 +520,47 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
+                    layout: { padding: 20 },
                     plugins: { 
-                        legend: { position: 'bottom', labels: { color: textColor, padding: 15 } },
-                        datalabels: {
-                            color: '#fff',
-                            anchor: 'center',
-                            align: 'center',
-                            font: { weight: 'bold', size: 14 },
-                            formatter: (value) => {
-                                const percentage = total > 0 ? Math.round((value/total)*100) : 0;
-                                return `${value}\n${percentage}%`;
-                            }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                color: textColor, 
+                                padding: 10,
+                                font: { size: 11 },
+                                boxWidth: 12
+                            } 
                         }
                     } 
-                }
+                },
+                plugins: [{
+                    id: 'doughnutLabels',
+                    afterDraw(chart) {
+                        const { ctx, data } = chart;
+                        const dataset = data.datasets[0];
+                        
+                        chart.getDatasetMeta(0).data.forEach((element, index) => {
+                            const value = dataset.data[index];
+                            const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                            
+                            // Calcular posição no centro da fatia
+                            const model = element;
+                            const midAngle = model.startAngle + (model.endAngle - model.startAngle) / 2;
+                            const r = model.innerRadius + (model.outerRadius - model.innerRadius) * 0.5;
+                            const x = model.x + r * Math.cos(midAngle);
+                            const y = model.y + r * Math.sin(midAngle);
+                            
+                            ctx.fillStyle = '#ffffff';
+                            ctx.font = 'bold 10px Inter';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(`${percentage}%`, x, y);
+                        });
+                    }
+                }]
             });
 
-            // Gráfico de Turno (Bar)
+            // Gráfico de Turno (Bar) - COM RÓTULOS
             const turnoCtx = document.getElementById('turnoChart').getContext('2d');
             turnoChart = new Chart(turnoCtx, {
                 type: 'bar',
@@ -508,32 +569,33 @@
                     datasets: [{ 
                         data: Object.values(turnoCounts), 
                         backgroundColor: ['#EE4D2D', '#FF6B4A', '#D73211'], 
-                        borderRadius: 8,
+                        borderRadius: 6,
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true, 
                     maintainAspectRatio: false,
+                    layout: { padding: { top: 25 } },
                     plugins: { 
-                        legend: { display: false },
-                        datalabels: datalabelsConfig
+                        legend: { display: false }
                     },
                     scales: {
                         y: { 
                             beginAtZero: true, 
-                            ticks: { color: textColor },
-                            grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }
+                            ticks: { color: textColor, font: { size: 10 } },
+                            grid: { color: gridColor }
                         },
                         x: { 
-                            ticks: { color: textColor }, 
+                            ticks: { color: textColor, font: { size: 11 } }, 
                             grid: { display: false } 
                         }
                     }
-                }
+                },
+                plugins: [barLabelsPlugin]
             });
 
-            // Gráfico de Justificativas (Bar horizontal ou Pie)
+            // Gráfico de Justificativas (Pie) - RÓTULOS SIMPLIFICADOS
             const justCtx = document.getElementById('justificativaChart').getContext('2d');
             justificativaChart = new Chart(justCtx, {
                 type: 'pie',
@@ -549,20 +611,43 @@
                 options: {
                     responsive: true, 
                     maintainAspectRatio: false,
+                    layout: { padding: 20 },
                     plugins: { 
-                        legend: { position: 'bottom', labels: { color: textColor, padding: 10, font: { size: 10 } } },
-                        datalabels: {
-                            color: '#fff',
-                            anchor: 'center',
-                            align: 'center',
-                            font: { weight: 'bold', size: 12 },
-                            formatter: (value) => {
-                                const percentage = total > 0 ? Math.round((value/total)*100) : 0;
-                                return `${value}\n${percentage}%`;
-                            }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                color: textColor, 
+                                padding: 8, 
+                                font: { size: 9 },
+                                boxWidth: 10
+                            } 
                         }
                     }
-                }
+                },
+                plugins: [{
+                    id: 'pieLabels',
+                    afterDraw(chart) {
+                        const { ctx, data } = chart;
+                        const dataset = data.datasets[0];
+                        
+                        chart.getDatasetMeta(0).data.forEach((element, index) => {
+                            const value = dataset.data[index];
+                            const percentage = total > 0 ? Math.round((value/total)*100) : 0;
+                            
+                            const model = element;
+                            const midAngle = model.startAngle + (model.endAngle - model.startAngle) / 2;
+                            const r = model.outerRadius * 0.7;
+                            const x = model.x + r * Math.cos(midAngle);
+                            const y = model.y + r * Math.sin(midAngle);
+                            
+                            ctx.fillStyle = '#ffffff';
+                            ctx.font = 'bold 10px Inter';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(`${percentage}%`, x, y);
+                        });
+                    }
+                }]
             });
         }
 
@@ -624,16 +709,16 @@
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#EE4D2D]">${item.trip_number}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400 font-semibold">${item.turno}</td>
-                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[item.trip_status] || 'bg-gray-100'}">${item.trip_status}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">${item.vehicle_type_name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded px-2">${item.sortcode}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">${item.cpt_realized}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm ${item.orders < 5776 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-900 dark:text-gray-100'}">${item.orders.toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="px-2 py-1 rounded ${item.trip_source === 'FORECAST' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'} text-xs font-medium">${item.trip_source}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <select onchange="updateJustificativa('${item.trip_number}', this.value)" class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1 focus:ring-2 focus:ring-[#EE4D2D]">
+                    <td class="px-4 py-3 whitespace-nowrap text-xs font-bold text-[#EE4D2D]">${item.trip_number}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400 font-semibold">${item.turno}</td>
+                    <td class="px-4 py-3 whitespace-nowrap"><span class="px-2 py-1 rounded-full text-xs font-medium ${statusColors[item.trip_status] || 'bg-gray-100'}">${item.trip_status}</span></td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400">${item.vehicle_type_name}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded">${item.sortcode}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400">${item.cpt_realized}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs ${item.orders < 5776 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-900 dark:text-gray-100'}">${item.orders.toLocaleString()}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-xs"><span class="px-2 py-1 rounded ${item.trip_source === 'FORECAST' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800'} text-xs font-medium">${item.trip_source}</span></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <select onchange="updateJustificativa('${item.trip_number}', this.value)" class="text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-2 py-1 focus:ring-2 focus:ring-[#EE4D2D]">
                             <option value="">Selecione...</option>
                             <option value="Falta de pacotes" ${item.justificativa === 'Falta de pacotes' ? 'selected' : ''}>Falta de pacotes</option>
                             <option value="Perfil volumoso" ${item.justificativa === 'Perfil volumoso' ? 'selected' : ''}>Perfil volumoso</option>
@@ -653,7 +738,6 @@
             const item = dados.find(d => d.trip_number === tripNumber);
             if (item) {
                 item.justificativa = value;
-                // Atualizar gráfico se estiver no dashboard
                 if (!document.getElementById('dashboard-section').classList.contains('hidden')) {
                     updateCharts();
                 }
