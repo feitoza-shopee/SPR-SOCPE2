@@ -34,7 +34,7 @@
     <div id="loading" class="loading-overlay">
         <div class="text-center">
             <div class="loading-spinner mx-auto mb-4"></div>
-            <p class="text-white text-lg font-medium">Carregando dados da planilha...</p>
+            <p class="text-white text-lg font-medium" id="loading-message">Carregando dados da API...</p>
             <p class="text-white/70 text-sm mt-2" id="loading-status">Conectando...</p>
         </div>
     </div>
@@ -298,8 +298,8 @@
     </div>
 
     <script>
-        // URL da planilha publicada em CSV
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHXiO7gSyI90XTkptnWMT5Lt2RMS-z9nXJmhlOwYd_9CRIhRxozDguNZVQfSEs062gdVvu4sLTvuC0/pub?gid=0&single=true&output=csv';
+        // URL da API do Google Apps Script (JSON)
+        const API_URL = 'https://script.google.com/a/macros/shopee.com/s/AKfycbw--JMEyutx8Ivj8ZlemPaiXAM9O_kSyfPnqyECCAhDtMkP1TzLshFZd-CfcxviUTFfdw/exec';
 
         let dados = [];
         let filteredData = [];
@@ -310,59 +310,62 @@
         let justificativaChart = null;
         let totalGeral = 0;
 
-        // Inicialização - Carregar dados da planilha
+        // Inicialização - Carregar dados da API
         document.addEventListener('DOMContentLoaded', async function() {
             if (localStorage.getItem('darkMode') === 'true') {
                 document.documentElement.classList.add('dark');
             }
             
-            await loadDataFromSheet();
+            await loadDataFromAPI();
         });
 
-        async function loadDataFromSheet() {
+        async function loadDataFromAPI() {
             try {
-                document.getElementById('loading-status').textContent = 'Buscando dados...';
+                document.getElementById('loading-status').textContent = 'Conectando à API...';
                 
-                const response = await fetch(SHEET_URL);
-                if (!response.ok) throw new Error('Erro ao carregar planilha');
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                 
-                const csvText = await response.text();
-                document.getElementById('loading-status').textContent = 'Processando ' + csvText.split('\n').length + ' linhas...';
+                document.getElementById('loading-status').textContent = 'Processando dados JSON...';
+                const jsonData = await response.json();
                 
-                // Parse CSV manualmente
-                const lines = csvText.trim().split('\n');
-                const headers = parseCSVLine(lines[0]);
-                
-                dados = [];
-                for (let i = 1; i < lines.length; i++) {
-                    if (!lines[i].trim()) continue;
-                    const values = parseCSVLine(lines[i]);
-                    const row = {};
-                    headers.forEach((header, index) => {
-                        row[header.trim()] = values[index] ? values[index].trim() : '';
-                    });
-                    
-                    // Mapear campos da planilha para o formato do sistema
-                    dados.push({
-                        trip_number: row.trip_number || '',
-                        turno: row.turno || '',
-                        trip_status: row.trip_status || '',
-                        vehicle_type_name: row.vehicle_type_name || '',
-                        sortcode: row.sortcode || '',
-                        cpt_realized: row.cpt_realized || '',
-                        orders: parseInt(row.orders) || 0,
-                        trip_source: row.trip_source || '',
-                        justificativa: row.cancel_reason || '',
-                        date_cpt: row.date_cpt || ''
-                    });
+                // Verifica se os dados vieram no formato esperado
+                if (!Array.isArray(jsonData)) {
+                    console.warn('Resposta não é um array, tentando extrair dados:', jsonData);
+                    // Tenta extrair se vier em um formato como { data: [...] }
+                    dados = jsonData.data || jsonData.rows || jsonData.records || [];
+                } else {
+                    dados = jsonData;
                 }
                 
-                // Remover linhas vazias
-                dados = dados.filter(d => d.trip_number);
+                document.getElementById('loading-status').textContent = `Mapeando ${dados.length} registros...`;
+                
+                // Mapear campos da API para o formato do sistema
+                // ATENÇÃO: Ajuste os nomes dos campos conforme a estrutura real do seu JSON
+                dados = dados.map(item => {
+                    // Tenta diferentes possibilidades de nomes de campos
+                    return {
+                        trip_number: item.trip_number || item.TripNumber || item.tripNumber || item.id || '',
+                        turno: item.turno || item.Turno || item.shift || '',
+                        trip_status: item.trip_status || item.TripStatus || item.status || item.Status || '',
+                        vehicle_type_name: item.vehicle_type_name || item.VehicleType || item.vehicleType || item.tipo_veiculo || '',
+                        sortcode: item.sortcode || item.Sortcode || item.sortCode || item.codigo || '',
+                        cpt_realized: item.cpt_realized || item.CPT || item.cpt || item.data_cpt || '',
+                        orders: parseInt(item.orders || item.Orders || item.order_count || 0),
+                        trip_source: item.trip_source || item.TripSource || item.source || item.origem || '',
+                        justificativa: item.cancel_reason || item.Justificativa || item.justificativa || item.reason || '',
+                        date_cpt: item.date_cpt || item.DateCPT || item.data || ''
+                    };
+                });
+                
+                // Remover linhas vazias (sem trip_number)
+                dados = dados.filter(d => d.trip_number && d.trip_number.toString().trim() !== '');
+                
                 totalGeral = dados.length;
                 filteredData = [...dados];
                 
-                document.getElementById('data-source').textContent = `${totalGeral} registros carregados`;
+                document.getElementById('loading-message').textContent = 'Dados carregados com sucesso!';
+                document.getElementById('data-source').textContent = `${totalGeral} registros (JSON API)`;
                 document.getElementById('loading').style.display = 'none';
                 
                 initializeFilters();
@@ -370,46 +373,23 @@
                 renderTable();
                 
             } catch (error) {
-                console.error('Erro:', error);
+                console.error('Erro detalhado:', error);
                 document.getElementById('loading-status').textContent = 'Erro: ' + error.message;
-                document.getElementById('data-source').textContent = 'Erro ao carregar';
+                document.getElementById('loading-message').textContent = 'Falha ao carregar dados';
+                document.getElementById('data-source').textContent = 'Erro na API';
                 
                 // Dados de fallback em caso de erro
-                dados = getFallbackData();
-                totalGeral = dados.length;
-                filteredData = [...dados];
-                document.getElementById('loading').style.display = 'none';
-                initializeFilters();
-                updateDashboard();
-                renderTable();
+                setTimeout(() => {
+                    dados = getFallbackData();
+                    totalGeral = dados.length;
+                    filteredData = [...dados];
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('data-source').textContent = `${totalGeral} registros (modo offline)`;
+                    initializeFilters();
+                    updateDashboard();
+                    renderTable();
+                }, 2000);
             }
-        }
-
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                const nextChar = line[i + 1];
-                
-                if (char === '"') {
-                    if (inQuotes && nextChar === '"') {
-                        current += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current);
-            return result;
         }
 
         function getFallbackData() {
@@ -429,19 +409,24 @@
 
             // Dashboard
             const dashTurno = document.getElementById('dash-turno');
+            dashTurno.innerHTML = '<option value="">Todos</option>';
             turnos.forEach(t => dashTurno.innerHTML += `<option value="${t}">${t}</option>`);
             
             const dashSortcode = document.getElementById('dash-sortcode');
+            dashSortcode.innerHTML = '<option value="">Todos</option>';
             sortcodes.forEach(s => dashSortcode.innerHTML += `<option value="${s}">${s}</option>`);
 
             // Operação
             const opTurno = document.getElementById('op-turno');
+            opTurno.innerHTML = '<option value="">Todos</option>';
             turnos.forEach(t => opTurno.innerHTML += `<option value="${t}">${t}</option>`);
             
             const opSortcode = document.getElementById('op-sortcode');
+            opSortcode.innerHTML = '<option value="">Todos</option>';
             sortcodes.forEach(s => opSortcode.innerHTML += `<option value="${s}">${s}</option>`);
             
             const opSource = document.getElementById('op-source');
+            opSource.innerHTML = '<option value="">Todas</option>';
             sources.forEach(s => opSource.innerHTML += `<option value="${s}">${s}</option>`);
         }
 
@@ -471,7 +456,13 @@
             const sortcode = document.getElementById('dash-sortcode').value;
 
             filteredData = dados.filter(item => {
-                const itemDate = item.cpt_realized ? new Date(item.cpt_realized.split(' ')[0]) : null;
+                // Extrair data do campo cpt_realized (assumindo formato "YYYY-MM-DD HH:MM")
+                let itemDate = null;
+                if (item.cpt_realized) {
+                    const datePart = item.cpt_realized.split(' ')[0];
+                    itemDate = datePart ? new Date(datePart) : null;
+                }
+                
                 const inicio = dataInicio ? new Date(dataInicio) : null;
                 const fim = dataFim ? new Date(dataFim) : null;
                 
@@ -691,7 +682,12 @@
             const search = document.getElementById('search-trip').value.toLowerCase();
 
             filteredData = dados.filter(item => {
-                const itemDate = item.cpt_realized ? new Date(item.cpt_realized.split(' ')[0]) : null;
+                let itemDate = null;
+                if (item.cpt_realized) {
+                    const datePart = item.cpt_realized.split(' ')[0];
+                    itemDate = datePart ? new Date(datePart) : null;
+                }
+                
                 const inicio = dataInicio ? new Date(dataInicio) : null;
                 const fim = dataFim ? new Date(dataFim) : null;
                 
@@ -759,7 +755,7 @@
                 tbody.appendChild(row);
             });
 
-            document.getElementById('table-info').textContent = `Mostrando ${Math.min(filteredData.length, start + 1)}-${Math.min(filteredData.length, start + itemsPerPage)} de ${filteredData.length} registros`;
+            document.getElementById('table-info').textContent = `Mostrando ${filteredData.length ? Math.min(filteredData.length, start + 1) : 0}-${Math.min(filteredData.length, start + itemsPerPage)} de ${filteredData.length} registros`;
             document.getElementById('btn-prev').disabled = currentPage === 1;
             document.getElementById('btn-next').disabled = currentPage >= totalPages || totalPages === 0;
         }
